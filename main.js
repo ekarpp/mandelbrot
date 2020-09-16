@@ -68,3 +68,22 @@ function load()
 
   ctx.putImageData(img, 0, 0);
 }
+
+document.onkeypress = (e) => {
+  switch(e.key) {
+  case "z": case "Z":
+    break; // zoom in
+  case "x": case "X":
+    break; // zoom out
+  case "w": case "W":
+    break; // move up
+  case "s": case "S":
+    break; // move down
+  case "d": case "D":
+    break; // move left
+  case "a": case "A":
+    break; // move right
+  case "r": case "R":
+    break; // reset
+  }
+}
