@@ -20,8 +20,6 @@ function init()
   const body = document.getElementsByTagName("body")[0];
   body.appendChild(canvas);
 
-  ctx = canvas.getContext("2d");
-
   render();
 
   document.onkeypress = (e) => {
