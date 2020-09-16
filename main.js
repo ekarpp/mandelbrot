@@ -1,5 +1,5 @@
-const wx = 200
-const wy = 200
+const wx = 500
+const wy = 500
 
 const LIM = 500;
 
@@ -39,9 +39,16 @@ function get_color(x, y)
 
 function load()
 {
-  var canv = document.getElementById("canvas");
-  var c = canv.getContext("2d");
-  var img = c.createImageData(wx, wy);
+  var canvas = document.createElement("canvas");
+  canvas.id = "canvas";
+  canvas.width = wx;
+  canvas.height = wy;
+
+  const body = document.getElementsByTagName("body")[0];
+  body.appendChild(canvas);
+
+  var ctx = canvas.getContext("2d");
+  var img = ctx.createImageData(wx, wy);
 
   for (var x = 0; x < wx; x++)
   {
@@ -56,5 +63,5 @@ function load()
     }
   }
 
-  c.putImageData(img, 0, 0);
+  ctx.putImageData(img, 0, 0);
 }
