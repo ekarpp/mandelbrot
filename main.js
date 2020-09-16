@@ -1,19 +1,22 @@
 const wx = 500
 const wy = 500
 
-const LIM = 500;
+var w_space = 2.0;
+var h_space = 2.0;
+
+const ITER_LIM = 500;
 
 function iter(x, y)
 {
-  const c_re = 4*x/wx - 2.0;
-  const c_im = 4*y/wy - 2.0;
+  const c_re = 4*x/wx - w_space;
+  const c_im = 4*y/wy - h_space;
   // z_0 = 0
   // z_n+1 = z_n^2 + c
   var z_re = 0.0;
   var z_im = 0.0;
 
   var count = 0;
-  while (count < LIM && z_re*z_re + z_im*z_im < 4.0)
+  while (count < ITER_LIM && z_re*z_re + z_im*z_im < 4.0)
   {
     count++;
     // (a+bi)^2 = a^2 - b^2 + 2abi
@@ -31,7 +34,7 @@ function get_color(x, y)
 {
   const iters = iter(x, y);
 
-  if (iters == LIM)
+  if (iters == ITER_LIM)
     return {r: 0, g: 0, b: 0};
   else
     return {r: 255, g: 255, b: 255};
