@@ -98,10 +98,17 @@ function get_color(x, y)
 {
   const iters = iter(x, y);
 
-  if (iters == ITER_LIM)
-    return {r: 0, g: 0, b: 0};
-  else
-    return {r: 255, g: 255, b: 255};
+  const t = iters / ITER_LIM;
+  const tt = 1 - t;
+
+  // add more colorings
+  const color = {
+    r: 255 * 8 * t * tt + 32 * tt,
+    g: 255 * 4 * t * tt + 64 * tt,
+    b: 255 * 2 * t * tt + 128 * tt,
+  };
+
+  return color;
 }
 
 function iter(x, y)
