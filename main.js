@@ -17,15 +17,8 @@ const qi = (1/q - 1);
 
 // canvas dimensions (have to be same, only one variable for space dimensions)
 const wx = 500;
-const wy = 500;
+const wy = wx;
 
-// color functions
-// need to map select value to real function
-var cf_map = {
-  simpl: simpl
-}
-
-var color_fun = null;
 
 const onkeypress = (e) => {
   switch(e.key) {
@@ -78,6 +71,7 @@ function init()
   const body = document.getElementsByTagName("body")[0];
   body.appendChild(canvas);
 
+  // fill iteration count options
   const niters = document.getElementById("niters");
   const vals = [5, 10, 25, 50, 100, 500, 1000, 5000, 10000];
   vals.forEach((v) => {
@@ -88,6 +82,7 @@ function init()
   });
   niters.value = ITER_LIM;
 
+  // fill color function options
   const cfunc = document.getElementById("cfunc");
   const cfs = ["simpl"]
   cfs.forEach((v) => {
@@ -97,20 +92,16 @@ function init()
     cfunc.appendChild(opt);
   });
   cfunc.value = "simpl";
-  color_fun = simpl;
 
   render();
 
+  // keyboard input
   document.onkeypress = onkeypress;
+
   niters.onchange = () => {ITER_LIM = niters.value; render();}
   cfs.onchange = () => {color_fun = cf_map[cfs.value]; render();}
 }
 
-function update_values()
-{
-
-  render();
-}
 
 function render()
 {
@@ -133,29 +124,8 @@ function render()
   ctx.putImageData(img, 0, 0);
 }
 
-// add more colorings
-// maybe new file for just these?
-function simpl(t)
-{
-  const tt = 1 - t;
-
-  const color = {
-    r: 255 * 8 * t * tt + 32 * tt,
-    g: 255 * 4 * t * tt + 64 * tt,
-    b: 255 * 2 * t * tt + 128 * tt,
-  };
-
-  return color;
-}
-
 
 function get_color(x, y)
-{
-  const iters = iter(x, y);
-  return color_fun(iters / ITER_LIM);
-}
-
-function iter(x, y)
 {
   const c_re = space.x + space.dim * x/wx;
   const c_im = space.y - space.dim * y/wy;
@@ -183,5 +153,9 @@ function iter(x, y)
     im2 = z_im * z_im;
   }
 
-  return count;
+  const t = count / ITER_LIM;
+
+  // call the selected color function with the ratio
+  // to get the final color
+  return color_fun(t);
 }
