@@ -121,16 +121,22 @@ function iter(x, y)
   var z_re = 0.0;
   var z_im = 0.0;
 
+  var re2 = 0.0;
+  var im2 = 0.0;
+
   var count = 0;
-  while (count < ITER_LIM && z_re*z_re + z_im*z_im < 4.0)
+  while (count < ITER_LIM && re2 + im2 < 4.0)
   {
     count++;
     // (a+bi)^2 = a^2 - b^2 + 2abi
-    const n_re = z_re*z_re - z_im*z_im + c_re;
+    const n_re = re2 - im2 + c_re;
     const n_im = 2*z_re*z_im + c_im;
 
     z_re = n_re;
     z_im = n_im;
+
+    re2 = z_re * z_re;
+    im2 = z_im * z_im;
   }
 
   return count;
