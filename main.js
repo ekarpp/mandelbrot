@@ -84,8 +84,7 @@ function init()
 
   // fill color function options
   const cfunc = document.getElementById("cfunc");
-  const cfs = ["simpl"]
-  cfs.forEach((v) => {
+  Object.keys(cf_map).forEach((v) => {
     const opt = document.createElement("option");
     opt.value = v;
     opt.innerHTML = v;
@@ -99,7 +98,7 @@ function init()
   document.onkeypress = onkeypress;
 
   niters.onchange = () => {ITER_LIM = niters.value; render();}
-  cfs.onchange = () => {color_fun = cf_map[cfs.value]; render();}
+  cfunc.onchange = () => {color_fun = cf_map[cfunc.value]; render();}
 }
 
 
