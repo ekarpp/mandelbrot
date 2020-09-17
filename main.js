@@ -1,5 +1,5 @@
 const CANVAS_ID = "canvas";
-const ITER_LIM = 500;
+var ITER_LIM = 500;
 
 // space dimensions
 var space = {
@@ -19,6 +19,13 @@ const qi = (1/q - 1);
 const wx = 500;
 const wy = 500;
 
+// color functions
+// need to map select value to real function
+var cf_map = {
+  simpl: simpl
+}
+
+var color_fun = null;
 
 const onkeypress = (e) => {
   switch(e.key) {
@@ -71,9 +78,38 @@ function init()
   const body = document.getElementsByTagName("body")[0];
   body.appendChild(canvas);
 
+  const niters = document.getElementById("niters");
+  const vals = [5, 10, 25, 50, 100, 500, 1000, 5000, 10000];
+  vals.forEach((v) => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.innerHTML = v;
+    niters.appendChild(opt);
+  });
+  niters.value = ITER_LIM;
+
+  const cfunc = document.getElementById("cfunc");
+  const cfs = ["simpl"]
+  cfs.forEach((v) => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.innerHTML = v;
+    cfunc.appendChild(opt);
+  });
+  cfunc.value = "simpl";
+  color_fun = simpl;
+
   render();
 
   document.onkeypress = onkeypress;
+  niters.onchange = () => {ITER_LIM = niters.value; render();}
+  cfs.onchange = () => {color_fun = cf_map[cfs.value]; render();}
+}
+
+function update_values()
+{
+
+  render();
 }
 
 function render()
@@ -97,15 +133,12 @@ function render()
   ctx.putImageData(img, 0, 0);
 }
 
-
-function get_color(x, y)
+// add more colorings
+// maybe new file for just these?
+function simpl(t)
 {
-  const iters = iter(x, y);
-
-  const t = iters / ITER_LIM;
   const tt = 1 - t;
 
-  // add more colorings
   const color = {
     r: 255 * 8 * t * tt + 32 * tt,
     g: 255 * 4 * t * tt + 64 * tt,
@@ -113,6 +146,13 @@ function get_color(x, y)
   };
 
   return color;
+}
+
+
+function get_color(x, y)
+{
+  const iters = iter(x, y);
+  return color_fun(iters / ITER_LIM);
 }
 
 function iter(x, y)
