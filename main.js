@@ -13,6 +13,7 @@ var space = {
 // or reduce space dimension by p (while zooming)
 const p = 0.25;
 const q = 1 - p;
+const qi = (1/q - 1);
 
 // canvas dimensions (have to be same, only one variable for space dimensions)
 const wx = 500;
@@ -22,14 +23,17 @@ const wy = 500;
 const onkeypress = (e) => {
   switch(e.key) {
   case "z": case "Z": // zoom in
-    space.x += space.dim * (1 - q) / 2;
-    space.y -= space.dim * (1 - q) / 2;
+    // we have to move origin to keep the picture stable
+    // shrinks by q, so we have to move the picture by half of (1-q)=p towards the bottomright
+    space.x += space.dim * p / 2;
+    space.y -= space.dim * p / 2;
     space.dim = space.dim * q;
     render();
     break;
   case "x": case "X": // zoom out
-    space.x -= space.dim * (1/q - 1) / 2;
-    space.y += space.dim * (1/q - 1) / 2;
+    // qi = (1/q - 1)
+    space.x -= space.dim * qi / 2;
+    space.y += space.dim * qi / 2;
     space.dim = space.dim / q;
     render();
     break;
