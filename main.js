@@ -1,13 +1,60 @@
-// canvas dimensions
-const wx = 500
-const wy = 500
-
-// dimensions in space
-var w_space = 2.0;
-var h_space = 2.0;
-
 const CANVAS_ID = "canvas";
 const ITER_LIM = 500;
+
+// space dimensions
+var space = {
+  dim: 4.0,  // space width and height (canvas w and h have to be same)
+  x:  -2.0,  // x coordinate for picture top left
+  y:   2.0,  // y coordinate for picture top left
+}
+
+// multiplier for transformations:
+// move origin by p of current dimension (while moving)
+// or reduce space dimension by p (while zooming)
+const p = 0.25;
+const q = 1 - p;
+
+// canvas dimensions (have to be same, only one variable for space dimensions)
+const wx = 500;
+const wy = 500;
+
+
+const onkeypress = (e) => {
+  switch(e.key) {
+  case "z": case "Z": // zoom in
+    space.x += space.dim * (1 - q) / 2;
+    space.y -= space.dim * (1 - q) / 2;
+    space.dim = space.dim * q;
+    render();
+    break;
+  case "x": case "X": // zoom out
+    space.x -= space.dim * (1/q - 1) / 2;
+    space.y += space.dim * (1/q - 1) / 2;
+    space.dim = space.dim / q;
+    render();
+    break;
+  case "w": case "W": // move up
+    space.y += space.dim * p;
+    render();
+    break;
+  case "s": case "S": // move down
+    space.y -= space.dim * p;
+    render();
+    break;
+  case "a": case "A": // move right
+    space.x -= space.dim * p;
+    render();
+    break;
+  case "d": case "D": // move left
+    space.x += space.dim * p;
+    render();
+    break;
+  case "r": case "R": // reset
+    // save initial config ?
+    // add boxes so user can change values ?
+    break;
+  }
+}
 
 function init()
 {
@@ -22,24 +69,7 @@ function init()
 
   render();
 
-  document.onkeypress = (e) => {
-    switch(e.key) {
-    case "z": case "Z":
-      break; // zoom in
-    case "x": case "X":
-      break; // zoom out
-    case "w": case "W":
-      break; // move up
-    case "s": case "S":
-      break; // move down
-    case "d": case "D":
-      break; // move left
-    case "a": case "A":
-      break; // move right
-    case "r": case "R":
-      break; // reset
-    }
-  }
+  document.onkeypress = onkeypress;
 }
 
 function render()
@@ -76,8 +106,9 @@ function get_color(x, y)
 
 function iter(x, y)
 {
-  const c_re = 4*x/wx - w_space;
-  const c_im = 4*y/wy - h_space;
+  const c_re = space.x + space.dim * x/wx;
+  const c_im = space.y - space.dim * y/wy;
+
   // z_0 = 0
   // z_n+1 = z_n^2 + c
   var z_re = 0.0;
