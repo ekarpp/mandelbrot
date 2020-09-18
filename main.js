@@ -77,6 +77,19 @@ function init()
   });
   threads.value = 4;
 
+  const points = document.getElementById("points");
+  const ps = [
+    {name: "initial", loc: "0,0,1"},
+    {name: "spiral", loc: "-0.761574,-0.0847597,3125"},
+    {name: "input", loc: ""}
+  ]
+  ps.forEach((v) => {
+    const opt = document.createElement("option");
+    opt.value = v.loc;
+    opt.innerHTML = v.name;
+    points.appendChild(opt);
+  });
+
   init_workers(Number(threads.value));
 
   render();
@@ -84,6 +97,7 @@ function init()
   niters.onchange = () => {ITER_LIM = niters.value; render();}
   cfunc.onchange = () => {color_fun = cf_map[cfunc.value]; render();}
   threads.onchange = () => init_workers(Number(threads.value));
+  points.onchange = point_jump;
 
   // keyboard input
   document.onkeypress = (e) => {
@@ -132,8 +146,55 @@ function init()
 }
 
 
-// get rid of this ??
 function render()
 {
+  // update move input values
+  const m_point = document.getElementById("m_point");
+  m_point.value = 4.0 / space.dim;
+
+  const x_point = document.getElementById("x_point");
+  x_point.value = space.x + space.dim / 2;
+
+  const y_point = document.getElementById("y_point");
+  y_point.value = space.y - space.dim / 2;
+
+
   start_workers();
+}
+
+function go_button()
+{
+  const x = Number(document.getElementById("x_point").value);
+  const y = Number(document.getElementById("y_point").value);
+  const m = Number(document.getElementById("m_point").value);
+  move_to(x, y, m);
+}
+
+function move_to(x, y, m)
+{
+  space.dim = 4.0 / m;
+  space.x = x - space.dim / 2;
+  space.y = y + space.dim / 2;
+  render();
+}
+
+function point_jump()
+{
+  // hide the input ui
+  const point_input = document.getElementById("point_input");
+  point_input.style.display = "none";
+
+  // todo: add arbitrary input
+  var point = document.getElementById("points").value;
+
+  if (point == "")
+    point_input.style.display = "block";
+  else
+  {
+    point = point.split(",");
+    const x = Number(point[0]);
+    const y = Number(point[1]);
+    const m = Number(point[2]);
+    move_to(x, y, m);
+  }
 }

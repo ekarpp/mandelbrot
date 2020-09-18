@@ -30,6 +30,26 @@
       <label>Threads:</label></br>
       <select id="threads"></select></br>
 
+      <label>Jump to:</label></br>
+      <select id="points"></select></br>
+      <div style="display: none;" id="point_input">
+
+        <div style="float: left; padding-right: 5px;">
+          x:</br>
+          <input id="x_point" size="5"/>
+        </div>
+
+        y:</br>
+        <input id="y_point" size="5"/></br>
+
+        <div style="float: left; padding-right: 5px;">
+          m:</br>
+          <input id="m_point" size="5"/>
+          <button type="button" onclick="go_button();">Go</button>
+        </div>
+
+
+      </div>
       <!-- smoothing ? -->
     </div>
 
