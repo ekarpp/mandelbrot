@@ -4,13 +4,20 @@ var workers = {
   arr: []
 }
 
+function stop_workers()
+{
+  for (var i = 0; i < workers.count; i++)
+    workers.arr[i].terminate();
+  document.getElementById("title").style.color = "black";
+}
+
 
 function init_workers(new_count)
 {
   const working = workers.count !== workers.done;
   if (working)
-    for (var i = 0; i < workers.count; i++)
-      workers.arr[i].terminate();
+    stop_workers();
+
 
   if (new_count <= workers.count)
     workers.arr.length = new_count
@@ -34,6 +41,10 @@ function init_workers(new_count)
 
 function start_workers()
 {
+  // already working
+  if (workers.done !== workers.count)
+    return;
+
   workers.done = 0;
   const lines = Math.floor(wy / workers.count);
 
@@ -54,6 +65,8 @@ function start_workers()
     from: prev,
     till: wy
   });
+
+  document.getElementById("title").style.color = "red";
 }
 
 // gets called when some worker is done
@@ -79,5 +92,8 @@ function job_done(e)
 
   // everyone done -> draw image
   if (workers.done === workers.count)
+  {
     ctx.putImageData(img, 0, 0);
+    document.getElementById("title").style.color = "black";
+  }
 }
