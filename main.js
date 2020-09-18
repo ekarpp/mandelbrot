@@ -8,6 +8,11 @@ var space = {
   y:   2.0,  // y coordinate for picture top left
 }
 
+// image variable to store work results, initialized in init()
+var img;
+// canvas context
+var ctx;
+
 // multiplier for transformations:
 // move origin by p of current dimension (while moving)
 // or reduce space dimension by p (while zooming)
@@ -20,6 +25,14 @@ const wx = 500;
 const wy = wx;
 
 
+// object passed to workers
+var worker_data = {
+  space: space,
+  lim: ITER_LIM,
+  width: wx,
+  height: wy
+}
+
 function init()
 {
   // what if it fails ?
@@ -27,6 +40,8 @@ function init()
   canvas.id = CANVAS_ID;
   canvas.width = wx;
   canvas.height = wy;
+  ctx = canvas.getContext("2d");
+  img = ctx.createImageData(wx, wy);
 
   const body = document.getElementsByTagName("body")[0];
   body.appendChild(canvas);
@@ -52,13 +67,30 @@ function init()
   });
   cfunc.value = "simpl";
 
+  // fill threads options
+  const threads = document.getElementById("threads");
+  [1, 2, 4, 8, 16, 32].forEach((v) => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.innerHTML = v;
+    threads.appendChild(opt);
+  });
+  threads.value = 4;
+
+  init_workers(Number(threads.value));
+
   render();
 
   niters.onchange = () => {ITER_LIM = niters.value; render();}
   cfunc.onchange = () => {color_fun = cf_map[cfunc.value]; render();}
+  threads.onchange = () => init_workers(Number(threads.value));
 
   // keyboard input
   document.onkeypress = (e) => {
+    // don't change variables if rendering in progress
+    if (workers.count !== workers.done)
+      return;
+
     switch(e.key) {
     case "z": case "Z": // zoom in
       // we have to move origin to keep the picture stable
@@ -100,59 +132,8 @@ function init()
 }
 
 
+// get rid of this ??
 function render()
 {
-  const ctx = document.getElementById(CANVAS_ID).getContext("2d");
-  const img = ctx.createImageData(wx, wy);
-
-  for (var x = 0; x < wx; x++)
-  {
-    for (var y = 0; y < wy; y++)
-    {
-      const idx = 4*(x + wy*y)
-      const c = get_color(x, y);
-      img.data[idx + 0] = c.r;
-      img.data[idx + 1] = c.g;
-      img.data[idx + 2] = c.b;
-      img.data[idx + 3] = 255; // alpha
-    }
-  }
-
-  ctx.putImageData(img, 0, 0);
-}
-
-
-function get_color(x, y)
-{
-  const c_re = space.x + space.dim * x/wx;
-  const c_im = space.y - space.dim * y/wy;
-
-  // z_0 = 0
-  // z_n+1 = z_n^2 + c
-  var z_re = 0.0;
-  var z_im = 0.0;
-
-  var re2 = 0.0;
-  var im2 = 0.0;
-
-  var count = 0;
-  while (count < ITER_LIM && re2 + im2 < 4.0)
-  {
-    count++;
-    // (a+bi)^2 = a^2 - b^2 + 2abi
-    const n_re = re2 - im2 + c_re;
-    const n_im = 2*z_re*z_im + c_im;
-
-    z_re = n_re;
-    z_im = n_im;
-
-    re2 = z_re * z_re;
-    im2 = z_im * z_im;
-  }
-
-  const t = count / ITER_LIM;
-
-  // call the selected color function with the ratio
-  // to get the final color
-  return color_fun(t);
+  start_workers();
 }
