@@ -137,10 +137,6 @@ function init()
       space.x += space.dim * p;
       render();
       break;
-    case "r": case "R": // reset
-      // save initial config ?
-      // add boxes so user can change values ?
-      break;
     }
   }
 }
