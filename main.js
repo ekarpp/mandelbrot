@@ -20,46 +20,6 @@ const wx = 500;
 const wy = wx;
 
 
-const onkeypress = (e) => {
-  switch(e.key) {
-  case "z": case "Z": // zoom in
-    // we have to move origin to keep the picture stable
-    // shrinks by q, so we have to move the picture by half of (1-q)=p towards the bottomright
-    space.x += space.dim * p / 2;
-    space.y -= space.dim * p / 2;
-    space.dim = space.dim * q;
-    render();
-    break;
-  case "x": case "X": // zoom out
-    // qi = (1/q - 1)
-    space.x -= space.dim * qi / 2;
-    space.y += space.dim * qi / 2;
-    space.dim = space.dim / q;
-    render();
-    break;
-  case "w": case "W": // move up
-    space.y += space.dim * p;
-    render();
-    break;
-  case "s": case "S": // move down
-    space.y -= space.dim * p;
-    render();
-    break;
-  case "a": case "A": // move right
-    space.x -= space.dim * p;
-    render();
-    break;
-  case "d": case "D": // move left
-    space.x += space.dim * p;
-    render();
-    break;
-  case "r": case "R": // reset
-    // save initial config ?
-    // add boxes so user can change values ?
-    break;
-  }
-}
-
 function init()
 {
   // what if it fails ?
@@ -94,11 +54,49 @@ function init()
 
   render();
 
-  // keyboard input
-  document.onkeypress = onkeypress;
-
   niters.onchange = () => {ITER_LIM = niters.value; render();}
   cfunc.onchange = () => {color_fun = cf_map[cfunc.value]; render();}
+
+  // keyboard input
+  document.onkeypress = (e) => {
+    switch(e.key) {
+    case "z": case "Z": // zoom in
+      // we have to move origin to keep the picture stable
+      // shrinks by q, so we have to move the picture by half of (1-q)=p towards the bottomright
+      space.x += space.dim * p / 2;
+      space.y -= space.dim * p / 2;
+      space.dim = space.dim * q;
+      render();
+      break;
+    case "x": case "X": // zoom out
+      // qi = (1/q - 1)
+      space.x -= space.dim * qi / 2;
+      space.y += space.dim * qi / 2;
+      space.dim = space.dim / q;
+      render();
+      break;
+    case "w": case "W": // move up
+      space.y += space.dim * p;
+      render();
+      break;
+    case "s": case "S": // move down
+      space.y -= space.dim * p;
+      render();
+      break;
+    case "a": case "A": // move right
+      space.x -= space.dim * p;
+      render();
+      break;
+    case "d": case "D": // move left
+      space.x += space.dim * p;
+      render();
+      break;
+    case "r": case "R": // reset
+      // save initial config ?
+      // add boxes so user can change values ?
+      break;
+    }
+  }
 }
 
 
