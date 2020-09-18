@@ -4,19 +4,12 @@ var workers = {
   arr: []
 }
 
-function stop_workers()
-{
-  for (var i = 0; i < workers.count; i++)
-    workers.arr[i].terminate();
-  document.getElementById("title").style.color = "black";
-}
-
-
 function init_workers(new_count)
 {
   const working = workers.count !== workers.done;
   if (working)
-    stop_workers();
+    for (var i = 0; i < workers.count; i++)
+      workers.arr[i].terminate();
 
 
   if (new_count <= workers.count)
