@@ -97,6 +97,7 @@ function init()
 
   render();
 
+  // todo: dont change while working
   niters.onchange = () => {worker_data.lim = Number(niters.value); render();}
   cfunc.onchange = () => {color_fun = cf_map[cfunc.value]; render();}
   threads.onchange = () => init_workers(Number(threads.value));
