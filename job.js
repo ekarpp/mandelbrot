@@ -3,6 +3,8 @@ onmessage = (e) => {
   const lim = e.data.vals.lim;
   const wx = e.data.vals.width;
   const wy = e.data.vals.height;
+  const normal = e.data.vals.normal;
+
 
   var res = []
 
@@ -22,10 +24,27 @@ onmessage = (e) => {
       var re2 = 0.0;
       var im2 = 0.0;
 
+      if (normal)
+      {
+        // derivative w.r.t. c
+        var d_re = 0.0;
+        var d_im = 0.0;
+      }
+
       var count = 0;
       while (count < lim && re2 + im2 < R*R)
       {
         count++;
+
+        if (normal)
+        {
+          const nd_re = 2*(d_re*z_re - d_im*z_im) + 1;
+          const nd_im = 2*(d_re*z_im + d_im*z_re);
+
+          d_re = nd_re;
+          d_im = nd_im;
+        }
+
         // (a+bi)^2 = a^2 - b^2 + 2abi
         const n_re = re2 - im2 + c_re;
         const n_im = 2*z_re*z_im + c_im;
@@ -41,12 +60,38 @@ onmessage = (e) => {
       if (count === lim)
         res[y - e.data.from][x] = 0;
       else
-        // real iteration number: count - ln(ln(sqrt(re2 + im2) / ln(R))) / ln(2)
-        res[y - e.data.from][x] = count + 1 - (Math.log(Math.log(re2 + im2)) - Math.log(Math.log(R))) / Math.log(2);
+      {
+        if (!normal)
+          // real iteration number: count - ln(ln(sqrt(re2 + im2) / ln(R))) / ln(2)
+          res[y - e.data.from][x] = count + 1 - (Math.log(Math.log(re2 + im2)) - Math.log(Math.log(R))) / Math.log(2);
+        else
+        {
+          // u = z/d
+          var u_re = (z_re*d_re + z_im*d_im) / (d_re*d_re + d_im*d_im);
+          var u_im = (z_im*d_re - z_re*d_im) / (d_re*d_re + d_im*d_im);
+          // normalize
+          const abs = Math.sqrt(u_re*u_re + u_im*u_im);
+          u_re /= abs;
+          u_im /= abs;
+
+          // dot product with light direction
+          var t = u_re*l_re + u_im*l_im + h;
+          t /= 1 + h;
+          t = Math.max(0, t);
+          res[y - e.data.from][x] = t;
+        }
+      }
     }
   }
   postMessage({from: e.data.from, result: res});
 }
 
 // escape radius, bigger the better, only slight effect on speed
-const R = 10;
+const R = 100;
+
+// light height
+const h = 1.5;
+// incoming light angle
+const a = Math.PI;
+const l_re = Math.cos(a);
+const l_im = Math.sin(a);

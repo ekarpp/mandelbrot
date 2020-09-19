@@ -6,8 +6,8 @@ var workers = {
 
 function init_workers(new_count)
 {
-  const working = workers.count !== workers.done;
-  if (working)
+  const wip = working();
+  if (wip)
     for (var i = 0; i < workers.count; i++)
       workers.arr[i].terminate();
 
@@ -28,8 +28,13 @@ function init_workers(new_count)
   workers.done = new_count;
 
   // start working again if it was interrupted
-  if (working)
+  if (wip)
     render();
+}
+
+function working()
+{
+  return workers.count !== workers.done;
 }
 
 function start_workers()
@@ -37,6 +42,9 @@ function start_workers()
   // already working
   if (workers.done !== workers.count)
     return;
+
+  // different calculations if we need normal map
+  worker_data.normal = color_fun === normal_map;
 
   workers.done = 0;
   const lines = Math.floor(wy / workers.count);

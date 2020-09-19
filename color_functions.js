@@ -4,7 +4,8 @@ var cf_map = {
   Simple: simple,
   BW: bw,
   Periodic: periodic,
-  Periodiccolor: periodic_color
+  "Periodic color": periodic_color,
+  "Normal map": normal_map
 }
 
 var color_fun = Object.values(cf_map)[0];
@@ -24,6 +25,18 @@ function bw(t)
     return {r: 0, g: 0, b: 0};
   else
     return {r: 1, g: 1, b: 1};
+}
+
+// calculates normal w.r.t. light defined in job.js
+// and normal to point potential line
+// https://www.math.univ-toulouse.fr/~cheritat/wiki-draw/index.php/Mandelbrot_set#Normal_map_effect
+function normal_map(t)
+{
+  if (t == 0)
+    // color points not on the set as dark green
+    return {r: 0, g: 0.5, b: 0};
+  else
+    return {r: t, g: t, b: t};
 }
 
 // random coloring

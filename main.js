@@ -30,7 +30,8 @@ var worker_data = {
   space: space,
   lim: ITER_LIM,
   width: wx,
-  height: wy
+  height: wy,
+  normal: false
 }
 
 function init()
