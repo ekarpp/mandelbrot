@@ -97,7 +97,7 @@ function init()
 
   render();
 
-  niters.onchange = () => {worker_data.lim = niters.value; render();}
+  niters.onchange = () => {worker_data.lim = Number(niters.value); render();}
   cfunc.onchange = () => {color_fun = cf_map[cfunc.value]; render();}
   threads.onchange = () => init_workers(Number(threads.value));
   points.onchange = point_jump;
