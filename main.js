@@ -148,7 +148,7 @@ function init()
 
 function render()
 {
-  // update move input values
+  // update move ui values
   const m_point = document.getElementById("m_point");
   m_point.value = 4.0 / space.dim;
 
@@ -184,7 +184,6 @@ function point_jump()
   const point_input = document.getElementById("point_input");
   point_input.style.display = "none";
 
-  // todo: add arbitrary input
   var point = document.getElementById("points").value;
 
   if (point == "")
