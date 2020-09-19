@@ -23,7 +23,7 @@ onmessage = (e) => {
       var im2 = 0.0;
 
       var count = 0;
-      while (count < lim && re2 + im2 < 4.0)
+      while (count < lim && re2 + im2 < R*R)
       {
         count++;
         // (a+bi)^2 = a^2 - b^2 + 2abi
@@ -37,8 +37,16 @@ onmessage = (e) => {
         im2 = z_im * z_im;
       }
 
-      res[y - e.data.from][x] = count / lim;
+
+      if (count === lim)
+        res[y - e.data.from][x] = 0;
+      else
+        // real iteration number: count - ln(ln(sqrt(re2 + im2) / ln(R))) / ln(2)
+        res[y - e.data.from][x] = count + 1 - (Math.log(Math.log(re2 + im2)) - Math.log(Math.log(R))) / Math.log(2);
     }
   }
   postMessage({from: e.data.from, result: res});
 }
+
+// escape radius, bigger the better, only slight effect on speed
+const R = 10;
