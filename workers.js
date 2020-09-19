@@ -74,9 +74,9 @@ function job_done(e)
     {
       const idx = 4*(x + wy*(y + offst));
       const c = color_fun(result[y][x]);
-      img.data[idx + 0] = c.r;
-      img.data[idx + 1] = c.g;
-      img.data[idx + 2] = c.b;
+      img.data[idx + 0] = 255 * c.r;
+      img.data[idx + 1] = 255 * c.g;
+      img.data[idx + 2] = 255 * c.b;
       img.data[idx + 3] = 255; // alpha
     }
   }

@@ -65,7 +65,7 @@ function init()
     opt.innerHTML = v;
     cfunc.appendChild(opt);
   });
-  cfunc.value = "simpl";
+  cfunc.value = Object.keys(cf_map)[0];
 
   // fill threads options
   const threads = document.getElementById("threads");
