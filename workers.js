@@ -40,7 +40,7 @@ function working()
 function start_workers()
 {
   // already working
-  if (workers.done !== workers.count)
+  if (working())
     return;
 
   // different calculations if we need normal map

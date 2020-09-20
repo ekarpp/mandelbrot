@@ -75,8 +75,8 @@ onmessage = (e) => {
           u_im /= abs;
 
           // dot product with light direction
-          var t = u_re*l_re + u_im*l_im + h;
-          t /= 1 + h;
+          var t = (u_re*l_re + u_im*l_im + l_z);
+          t /= (1 + l_z);
           t = Math.max(0, t);
           res[y - e.data.from][x] = t;
         }
@@ -89,9 +89,8 @@ onmessage = (e) => {
 // escape radius, bigger the better, only slight effect on speed
 const R = 100;
 
-// light height
-const h = 1.5;
-// incoming light angle
-const a = Math.PI;
+// incoming light direction
+const a = Math.PI / 8;
 const l_re = Math.cos(a);
 const l_im = Math.sin(a);
+const l_z = 1.5;

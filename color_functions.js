@@ -27,7 +27,7 @@ function bw(t)
     return {r: 1, g: 1, b: 1};
 }
 
-// calculates normal w.r.t. light defined in job.js
+// calculates shading with directional light defined in "job.js"
 // and normal to point potential line
 // https://www.math.univ-toulouse.fr/~cheritat/wiki-draw/index.php/Mandelbrot_set#Normal_map_effect
 function normal_map(t)
