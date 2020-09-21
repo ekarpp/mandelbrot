@@ -4,11 +4,19 @@ var cf_map = {
   Simple: simple,
   BW: bw,
   Periodic: periodic,
-  "Periodic color": periodic_color,
-  "Normal map": normal_map
+  "Periodic color": periodic_color
 }
 
 var color_fun = Object.values(cf_map)[0];
+
+// apply shading data
+function apply_shading(rgb, s)
+{
+  rgb.r *= s;
+  rgb.g *= s;
+  rgb.b *= s;
+  return rgb;
+}
 
 // color functions take single argument: the real iteration number
 // they return a object with fields r,g,b corresponding to the coefficient of each color
@@ -25,18 +33,6 @@ function bw(t)
     return {r: 0, g: 0, b: 0};
   else
     return {r: 1, g: 1, b: 1};
-}
-
-// calculates shading with directional light defined in "job.js"
-// and normal to point potential line
-// https://www.math.univ-toulouse.fr/~cheritat/wiki-draw/index.php/Mandelbrot_set#Normal_map_effect
-function normal_map(t)
-{
-  if (t == 0)
-    // color points not on the set as dark green
-    return {r: 0, g: 0.5, b: 0};
-  else
-    return {r: t, g: t, b: t};
 }
 
 // random coloring

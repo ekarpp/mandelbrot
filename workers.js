@@ -43,9 +43,6 @@ function start_workers()
   if (working())
     return;
 
-  // different calculations if we need normal map
-  worker_data.normal = color_fun === normal_map;
-
   workers.done = 0;
   const lines = Math.floor(wy / workers.count);
 
@@ -75,13 +72,16 @@ function job_done(e)
 {
   var offst = e.data.from;
   const result = e.data.result;
+  const shading = e.data.shading;
 
   for (var y = 0; y < result.length; y++)
   {
     for (var x = 0; x < wx; x++)
     {
       const idx = 4*(x + wy*(y + offst));
-      const c = color_fun(result[y][x]);
+      var c = color_fun(result[y][x]);
+      if (shading)
+        c = apply_shading(c, shading[y][x]);
       img.data[idx + 0] = 255 * c.r;
       img.data[idx + 1] = 255 * c.g;
       img.data[idx + 2] = 255 * c.b;

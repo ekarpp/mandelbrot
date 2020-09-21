@@ -31,7 +31,7 @@ var worker_data = {
   lim: ITER_LIM,
   width: wx,
   height: wy,
-  normal: false
+  shading: false
 }
 
 function init()
@@ -95,13 +95,24 @@ function init()
 
   init_workers(Number(threads.value));
 
-  render();
-
   // todo: dont change while working
   niters.onchange = () => {worker_data.lim = Number(niters.value); render();}
   cfunc.onchange = () => {color_fun = cf_map[cfunc.value]; render();}
   threads.onchange = () => init_workers(Number(threads.value));
   points.onchange = point_jump;
+
+  // checkbox for toggleable shading
+  // calculates shading between directional light defined in "job.js"
+  // and normal to point potential line
+  // https://www.math.univ-toulouse.fr/~cheritat/wiki-draw/index.php/Mandelbrot_set#Normal_map_effect
+  const shading = document.getElementById("shading");
+  worker_data.shading = shading.checked;
+  shading.onclick = () => {
+    worker_data.shading = shading.checked;
+    render();
+  };
+
+  render();
 
   // keyboard input
   document.onkeypress = (e) => {

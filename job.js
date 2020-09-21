@@ -3,14 +3,17 @@ onmessage = (e) => {
   const lim = e.data.vals.lim;
   const wx = e.data.vals.width;
   const wy = e.data.vals.height;
-  const normal = e.data.vals.normal;
-
+  const shading = e.data.vals.shading;
 
   var res = []
+  if (shading)
+    var res_s = [];
 
   for (var y = e.data.from; y < e.data.till; y++)
   {
     res[y - e.data.from] = [];
+    if (shading)
+      res_s[y - e.data.from] = [];
     for (var x = 0; x < wx; x++)
     {
       const c_re = space.x + space.dim * x/wx;
@@ -24,7 +27,7 @@ onmessage = (e) => {
       var re2 = 0.0;
       var im2 = 0.0;
 
-      if (normal)
+      if (shading)
       {
         // derivative w.r.t. c
         var d_re = 0.0;
@@ -36,7 +39,7 @@ onmessage = (e) => {
       {
         count++;
 
-        if (normal)
+        if (shading)
         {
           const nd_re = 2*(d_re*z_re - d_im*z_im) + 1;
           const nd_im = 2*(d_re*z_im + d_im*z_re);
@@ -57,14 +60,21 @@ onmessage = (e) => {
       }
 
 
+
       if (count === lim)
+      {
         res[y - e.data.from][x] = 0;
+        if (shading)
+          res_s[y - e.data.from][x] = 0;
+      }
       else
       {
-        if (!normal)
-          // real iteration number: count - ln(ln(sqrt(re2 + im2) / ln(R))) / ln(2)
-          res[y - e.data.from][x] = count + 1 - (Math.log(Math.log(re2 + im2)) - Math.log(Math.log(R))) / Math.log(2);
-        else
+        // real iteration number: count - ln(ln(sqrt(re2 + im2) / ln(R))) / ln(2)
+        res[y - e.data.from][x] = count + 1
+          - (Math.log(Math.log(re2 + im2)) - Math.log(Math.log(R))) / Math.log(2);
+
+
+        if (shading)
         {
           // u = z/d
           var u_re = (z_re*d_re + z_im*d_im) / (d_re*d_re + d_im*d_im);
@@ -78,12 +88,13 @@ onmessage = (e) => {
           var t = (u_re*l_re + u_im*l_im + l_z);
           t /= (1 + l_z);
           t = Math.max(0, t);
-          res[y - e.data.from][x] = t;
+
+          res_s[y - e.data.from][x] = t;
         }
       }
     }
   }
-  postMessage({from: e.data.from, result: res});
+  postMessage({from: e.data.from, result: res, shading: res_s});
 }
 
 // escape radius, bigger the better, only slight effect on speed
