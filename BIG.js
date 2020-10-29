@@ -3,6 +3,9 @@ class BIG {
     this.coeff = coeff;
     this.exp = exp;
 
+    if (this.exp === undefined)
+      this.exp = 0;
+
     if (this.coeff === 0)
       return;
 
@@ -10,7 +13,7 @@ class BIG {
     if (neg)
       this.coeff = -this.coeff;
 
-    // make coeff (10.0, 1.0] exclusive
+    // make coeff in range ]10.0, 1.0]
     while (this.coeff >= 10.0)
     {
       this.coeff /= 10;
@@ -27,8 +30,15 @@ class BIG {
       this.coeff = -this.coeff;
   }
 
+  to_int() {
+    return this.coeff * Math.pow(10, this.exp);
+  }
+
   mul(other) {
-    return new BIG(this.coeff * other.coeff, this.exp + other.exp);
+    if (typeof(other) === "object")
+      return new BIG(this.coeff * other.coeff, this.exp + other.exp);
+    else
+      return new BIG(this.coeff * other, this.exp);
   }
 
   div(other) {
@@ -38,6 +48,10 @@ class BIG {
   gt(other) {
     return this.exp > other.exp
       || (this.exp == other.exp && this.coeff > other.coeff);
+  }
+
+  lt(other) {
+    return !this.gt(other);
   }
 
   add(other) {
@@ -62,6 +76,7 @@ class BIG {
   }
 
   sub(other) {
-    return this.add(new BIG(-other.coeff, other.exp));
+    return this.add( new BIG(-other.coeff, other.exp) );
   }
+
 }

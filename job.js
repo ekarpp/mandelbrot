@@ -1,4 +1,10 @@
+importScripts("./BIG.js");
+importScripts("./Imaginary.js");
+
 onmessage = (e) => {
+  if (e.data.vals.perturb !== null)
+    return perturbate(e);
+
   const space = e.data.vals.space;
   const lim = e.data.vals.lim;
   const wx = e.data.vals.width;
@@ -97,9 +103,86 @@ onmessage = (e) => {
   postMessage({from: e.data.from, result: res, shading: res_s});
 }
 
-// escape radius, bigger the better, only slight effect on speed
-const R = 100;
+function perturbate(e)
+{
+  const space = e.data.vals.space;
+  const lim = e.data.vals.lim;
+  const wx = e.data.vals.width;
+  const wy = e.data.vals.height;
+  const shading = e.data.vals.shading;
+  const perturb = e.data.vals.perturb;
 
+  const to_im = (v) => {
+    const re = new BIG(v.re.coeff, v.re.exp);
+    const im = new BIG(v.im.coeff, v.im.exp);
+    return new Imaginary(re, im);
+  };
+
+
+  const A = perturb.A.map(to_im);
+  const B = perturb.B.map(to_im);
+  const C = perturb.C.map(to_im);
+  const X = perturb.X.map(to_im);
+  console.log("X", X);
+  console.log("A", A);
+  console.log("B", B);
+  console.log("C", C);
+  var res = [];
+  if (shading)
+    var res_s = [];
+
+  for (var y = e.data.from; y < e.data.till; y++)
+  {
+    res[y - e.data.from] = [];
+    if (shading)
+      res_s[y - e.data.from] = [];
+    for (var x = 0; x < wx; x++)
+    {
+      const y0 = new Imaginary(
+        new BIG(space.x + space.dim * x/wx),
+        new BIG(space.y - space.dim * y/wy));
+
+      const d1 = y0.sub(X[0]);
+      const d2 = d1.mul(d1);
+      const d3 = d2.mul(d1);
+
+      const y_lim = A[lim].mul(d1).add( B[lim].mul(d2) ).add( C[lim].mul(d3) ).add( X[lim] );
+      if (y%50 == 0 && x % 50 == 0)
+      {
+        console.log(d2,d3,y_lim);
+      }
+      if (y_lim.sq_abs().lt(BIG_R))
+      {
+        res[y - e.data.from][x] = 0;
+        continue;
+      }
+
+      var hi = lim;
+      var lo = 0;
+
+      while (lo < hi)
+      {
+        const m = Math.floor((hi + lo) / 2);
+
+        const Y_m = A[m].mul(d1).add( B[m].mul(d2) ).add( C[m].mul(d3) ).add( X[m] );
+
+        if (Y_m.sq_abs().lt(BIG_R))
+          hi = m;
+        else
+          lo = m + 1;
+      }
+
+      res[y - e.data.from][x] = Math.floor((hi + lo) / 2);
+    }
+
+  }
+  postMessage({from: e.data.from, result: res, shading: res_s});
+
+}
+
+// escape radius, bigger the better, only slight effect on speed
+const R = 100*100;
+const BIG_R = new BIG(R);
 // incoming light direction
 const a = Math.PI / 8;
 const l_re = Math.cos(a);

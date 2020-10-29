@@ -31,7 +31,8 @@ var worker_data = {
   lim: ITER_LIM,
   width: wx,
   height: wy,
-  shading: false
+  shading: false,
+  perturb: null
 }
 
 function init()
@@ -76,14 +77,14 @@ function init()
     opt.innerHTML = v;
     threads.appendChild(opt);
   });
-  threads.value = 4;
+  threads.value = 1;
 
   const points = document.getElementById("points");
   const ps = [
     {name: "initial", loc: "0,0,1"},
     {name: "spiral", loc: "-0.761574,-0.0847597,3125"},
-    {name: "a", loc: "-0.34842633784126914,-0.60653940234393235,17952"},
-    {name: "b", loc: "2.613577e-1,-2.018128e-3,3.354786e+3"},
+    //{name: "a", loc: "-0.34842633784126914,-0.60653940234393235,17952"},
+    {name: "perturb", loc: "-1.78,3.75e-14,5.33e13"},
     {name: "input", loc: ""}
   ]
   ps.forEach((v) => {
@@ -157,18 +158,58 @@ function init()
 }
 
 
+function perturb_pre_calc()
+{
+  var A = [];
+  A[0] = new Imaginary(new BIG(1), new BIG(0));
+
+  var B = [];
+  B[0] = new Imaginary(new BIG(0), new BIG(0));
+
+  var C = [];
+  C[0] = new Imaginary(new BIG(0), new BIG(0));
+
+  var X = [];
+  X[0] = new Imaginary(new BIG(space.x + space.dim / 2), new BIG(space.y - space.dim / 2));
+
+  for (var i = 1; i <= worker_data.lim; i++)
+  {
+    // C = 2*X*C +
+    A[i] = X[i-1].mul( A[i-1] ).mul( 2 ).add( 1 );
+    B[i] = X[i-1].mul( B[i-1] ).mul( 2 ).add( A[i-1].mul( A[i-1] ) );
+    C[i] = X[i-1].mul( C[i-1] ).mul( 2 ).add( A[i-1].mul( B[i-1] ).mul( 2 ) );
+
+    X[i] = X[i-1].mul( X[i-1] ).add( X[0] );
+  }
+
+  const perturb = {
+    A: A,
+    B: B,
+    C: C,
+    X: X
+  };
+
+  return perturb;
+}
+
+
 function render()
 {
+  const n = 3;
   // update move ui values
   const m_point = document.getElementById("m_point");
-  m_point.value = 4.0 / space.dim;
+  m_point.value = (4.0 / space.dim).toPrecision(n);
 
   const x_point = document.getElementById("x_point");
-  x_point.value = space.x + space.dim / 2;
+  x_point.value = (space.x + space.dim / 2).toPrecision(n);
 
   const y_point = document.getElementById("y_point");
-  y_point.value = space.y - space.dim / 2;
+  y_point.value = (space.y - space.dim / 2).toPrecision(n);
 
+  if (space.dim < 1e-13)
+    worker_data.perturb = perturb_pre_calc();
+  else
+    worker_data.perturb = null;
 
   start_workers();
 }

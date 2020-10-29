@@ -73,7 +73,7 @@ function job_done(e)
   var offst = e.data.from;
   const result = e.data.result;
   const shading = e.data.shading;
-
+  console.log(result);
   for (var y = 0; y < result.length; y++)
   {
     for (var x = 0; x < wx; x++)
