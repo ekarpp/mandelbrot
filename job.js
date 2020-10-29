@@ -41,7 +41,7 @@ onmessage = (e) => {
       }
 
       var count = 0;
-      while (count < lim && re2 + im2 < R*R)
+      while (count < lim && re2 + im2 < R)
       {
         count++;
 
@@ -133,6 +133,7 @@ function perturbate(e)
 
   for (var y = e.data.from; y < e.data.till; y++)
   {
+    console.log(y);
     res[y - e.data.from] = [];
     if (shading)
       res_s[y - e.data.from] = [];
@@ -142,37 +143,23 @@ function perturbate(e)
         new BIG(space.x + space.dim * x/wx),
         new BIG(space.y - space.dim * y/wy));
 
-      const d1 = y0.sub(X[0]);
-      const d2 = d1.mul(d1);
-      const d3 = d2.mul(d1);
-
-      const y_lim = A[lim].mul(d1).add( B[lim].mul(d2) ).add( C[lim].mul(d3) ).add( X[lim] );
-      if (y%50 == 0 && x % 50 == 0)
+      const d0 = y0.sub(X[0]);
+      var i = 1;
+      var Yi = y0;
+      var di = d0;
+      while (i <= lim && Yi.sq_abs().lt(BIG_R))
       {
-        console.log(d2,d3,y_lim);
+        const tmp = X[i-1].mul( di ).mul( 2 ).add( di.mul(di) ).add( d0 );
+        di = tmp;
+        Yi = di.add( X[i] );
+        i += 1;
       }
-      if (y_lim.sq_abs().lt(BIG_R))
-      {
+
+      if (i > lim)
         res[y - e.data.from][x] = 0;
-        continue;
-      }
-
-      var hi = lim;
-      var lo = 0;
-
-      while (lo < hi)
-      {
-        const m = Math.floor((hi + lo) / 2);
-
-        const Y_m = A[m].mul(d1).add( B[m].mul(d2) ).add( C[m].mul(d3) ).add( X[m] );
-
-        if (Y_m.sq_abs().lt(BIG_R))
-          hi = m;
-        else
-          lo = m + 1;
-      }
-
-      res[y - e.data.from][x] = Math.floor((hi + lo) / 2);
+      else
+        res[y - e.data.from][x] = i + 1
+          - (Math.log(Math.log(Yi.sq_abs().to_int())) - Math.log(Math.log(R))) / Math.log(2);
     }
 
   }
