@@ -60,11 +60,11 @@ function init()
 
   const points = document.getElementById("points");
   const ps = [
-    {name: "initial", loc: "0,0,1"},
-    {name: "spiral", loc: "-0.761574,-0.0847597,3125"},
-    {name: "a", loc: "-0.34842633784126914,-0.60653940234393235,17952"},
-    {name: "b", loc: "2.613577e-1,-2.018128e-3,3.354786e+3"},
-    {name: "input", loc: ""}
+    { name: "initial", loc: "0,0,1" },
+    { name: "spiral", loc: "-0.761574,-0.0847597,3125" },
+    { name: "a", loc: "-0.34842633784126914,-0.60653940234393235,17952" },
+    { name: "b", loc: "2.613577e-1,-2.018128e-3,3.354786e+3" },
+    { name: "input", loc: "" }
   ];
   ps.forEach((v) => {
     const opt = document.createElement("option");
@@ -99,6 +99,7 @@ function init()
     if (config.workers.count !== config.workers.done)
       return;
 
+    var do_render = true;
     switch(e.key) {
     case "z": case "Z": // zoom in
       // we have to move origin to keep the picture stable
@@ -125,9 +126,13 @@ function init()
     case "d": case "D": // move left
       config.space.x += config.space.dim * p;
       break;
+    default:
+      do_render = false;
+      break;
     }
 
-    render();
+    if (do_render)
+      render();
   };
 }
 
@@ -171,8 +176,7 @@ function point_jump()
   point_input.style.display = "none";
 
   var point = document.getElementById("points").value;
-
-  if (point == "")
+  if (point === "")
     point_input.style.display = "block";
   else
   {

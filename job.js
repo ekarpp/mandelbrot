@@ -1,8 +1,7 @@
-import { config } from "./config.js";
-
 onmessage = e => {
   const from = e.data.from;
   const until = e.data.until;
+  const config = e.data.config;
 
   const space = config.space;
   const iterations = config.iterations;
@@ -111,5 +110,5 @@ onmessage = e => {
       }
     }
   }
-  postMessage({ from, image, shading });
+  postMessage({ from, image, shading, itr: config.iterations });
 };

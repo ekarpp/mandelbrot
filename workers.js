@@ -15,9 +15,9 @@ function init_workers(new_count)
   {
     for (var i = config.workers.count; i < new_count; i++)
     {
-      config.workers.arr[i] = new Worker("./job.js", { type: "module" });
+      config.workers.arr[i] = new Worker("./job.js");
       config.workers.arr[i].onmessage = job_done;
-      config.workers.arr[i].onerror = (e) => console.log(e);
+      config.workers.arr[i].onerror = (e) => console.error(e);
     }
   }
 
@@ -45,10 +45,19 @@ function start_workers()
   const lines = Math.floor(config.canvas.wy / config.workers.count);
 
   var prev = 0;
-
+  // need to pass the possibly updated configuration to the workers
+  const worker_cfg = {
+    space: config.space,
+    iterations: config.iterations,
+    canvas: config.canvas,
+    escape_r: config.escape_r,
+    light: config.light,
+    apply_shading: config.apply_shading
+  };
   for (var i = 0; i < config.workers.count - 1; i++)
   {
     config.workers.arr[i].postMessage({
+      config: worker_cfg,
       from: prev,
       until: prev + lines
     });
@@ -57,6 +66,7 @@ function start_workers()
 
   // last one gets all of the remaining in case of an uneven split
   config.workers.arr[config.workers.count - 1].postMessage({
+    config: worker_cfg,
     from: prev,
     until: config.canvas.wy
   });
