@@ -117,7 +117,6 @@ function init()
     if (config.workers.count !== config.workers.done)
       return;
 
-    var do_render = true;
     switch(e.key) {
     case "z": case "Z": // zoom in
       // we have to move origin to keep the picture stable
@@ -145,12 +144,10 @@ function init()
       config.space.x += config.space.dim * p;
       break;
     default:
-      do_render = false;
-      break;
+      return;
     }
 
-    if (do_render)
-      render();
+    render();
   };
 
   // init workers and render initial image
