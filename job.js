@@ -29,17 +29,11 @@
 
     const apply_shading = config.apply_shading;
 
-    var iteration_count = [];
     var image = [];
-    if (apply_shading)
-      var shading = [];
 
     for (var y = from; y < until; y++)
     {
-      iteration_count[y - from] = [];
       image[y - from] = [];
-      if (apply_shading)
-        shading[y - from] = [];
       for (var x = 0; x < wx; x++)
       {
         const c_re = space.x + space.dim * x/wx;
