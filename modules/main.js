@@ -1,5 +1,5 @@
 import { config } from "./config.js";
-import { init_workers, start_workers } from "./workers.js";
+import { init_workers, start_workers, update_color_fun } from "./workers.js";
 import { cf_map } from "./color_functions.js";
 
 // multiplier for transformations:
@@ -31,6 +31,20 @@ function init()
     render();
   };
 
+  // fill threads options
+  const threads = document.getElementById("threads");
+  [1, 2, 4, 8, 16, 32].forEach((v) => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    opt.innerHTML = v;
+    threads.appendChild(opt);
+  });
+  threads.value = 4;
+  // init workers, so color_fun can be set
+  init_workers(Number(threads.value));
+  threads.onchange = () => {
+    init_workers(Number(threads.value));
+  };
 
   // fill color function options
   const cfunc = document.getElementById("cfunc");
@@ -42,21 +56,12 @@ function init()
   });
   cfunc.value = Object.keys(cf_map)[0];
   config.color_fun = cf_map[cfunc.value];
+  update_color_fun();
   cfunc.onchange = () => {
     config.color_fun = cf_map[cfunc.value];
+    update_color_fun();
     render();
   };
-
-  // fill threads options
-  const threads = document.getElementById("threads");
-  [1, 2, 4, 8, 16, 32].forEach((v) => {
-    const opt = document.createElement("option");
-    opt.value = v;
-    opt.innerHTML = v;
-    threads.appendChild(opt);
-  });
-  threads.value = 4;
-  threads.onchange = () => init_workers(Number(threads.value));
 
   const points = document.getElementById("points");
   const ps = [
@@ -151,7 +156,7 @@ function init()
   };
 
   // init workers and render initial image
-  init_workers(Number(threads.value));
+  // ready to render now
   render();
 }
 

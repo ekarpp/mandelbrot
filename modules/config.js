@@ -20,7 +20,7 @@ const config = {
     z: 1.5 // "height" of light
   },
   iterations: 500, // number of iterations for each point
-  color_fun: undefined,
+  color_fun: a => a,
   // escape radius, bigger the better, only slight effect on speed
   escape_r: 100,
   apply_shading: false,

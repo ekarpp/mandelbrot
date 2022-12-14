@@ -1,5 +1,19 @@
 import { config } from "./config.js";
-import { cf_map } from "./color_functions.js";
+
+function update_color_fun_one(idx)
+{
+  config.workers.arr[idx].postMessage({
+    color_fun: config.color_fun.toString()
+  });
+}
+
+function update_color_fun()
+{
+  // render gets called afterwards, so can leave title as it is
+  document.getElementById("title").style.color = "red";
+  for (var i = 0; i < config.workers.count; i++)
+    update_color_fun_one(i);
+}
 
 function init_workers(new_count)
 {
@@ -17,7 +31,8 @@ function init_workers(new_count)
     {
       config.workers.arr[i] = new Worker("./job.js");
       config.workers.arr[i].onmessage = job_done;
-      config.workers.arr[i].onerror = (e) => console.error(e);
+      config.workers.arr[i].onerror = e => console.error(e);
+      update_color_fun_one(i);
     }
   }
 
@@ -79,25 +94,22 @@ function job_done(e)
 {
   const offset = e.data.from;
   const image = e.data.image;
-  const shading = e.data.shading;
 
   for (var y = 0; y < image.length; y++)
   {
     for (var x = 0; x < config.canvas.wx; x++)
     {
       const idx = 4*(x + config.canvas.wy*(y + offset));
-      var c = config.color_fun(image[y][x]);
-      if (shading)
-        c = c.map(v => v * shading[y][x]);
-      config.workers.image.data[idx + 0] = 255 * c[0];
-      config.workers.image.data[idx + 1] = 255 * c[1];
-      config.workers.image.data[idx + 2] = 255 * c[2];
+      var c = image[y][x];
+      config.workers.image.data[idx + 0] = c[0];
+      config.workers.image.data[idx + 1] = c[1];
+      config.workers.image.data[idx + 2] = c[2];
       config.workers.image.data[idx + 3] = 255; // alpha
     }
   }
   config.workers.done++;
 
-  // everyone done -> draw image
+  // everyone done -> draw image. move to main? future etc..
   if (config.workers.done === config.workers.count)
   {
     document.getElementById("canvas")
@@ -110,5 +122,6 @@ function job_done(e)
 
 export {
   init_workers,
-  start_workers
+  start_workers,
+  update_color_fun
 }
