@@ -1,17 +1,6 @@
-const CANVAS_ID = "canvas";
-var ITER_LIM = 500;
-
-// space dimensions
-var space = {
-  dim: 4.0,  // space width and height (canvas w and h have to be same)
-  x:  -2.0,  // x coordinate for picture top left
-  y:   2.0,  // y coordinate for picture top left
-}
-
-// image variable to store work results, initialized in init()
-var img;
-// canvas context
-var ctx;
+import { wx, wy, worker_data, workers, space, cf } from "./defs.js";
+import { init_workers, start_workers } from "./workers.js";
+import { cf_map } from "./color_functions.js";
 
 // multiplier for transformations:
 // move origin by p of current dimension (while moving)
@@ -20,32 +9,12 @@ const p = 0.25;
 const q = 1 - p;
 const qi = (1/q - 1);
 
-// canvas dimensions (have to be same, only one variable for space dimensions)
-const wx = 500;
-const wy = wx;
-
-
-// object passed to workers
-var worker_data = {
-  space: space,
-  lim: ITER_LIM,
-  width: wx,
-  height: wy,
-  shading: false
-}
 
 function init()
 {
-  // what if it fails ?
-  var canvas = document.createElement("canvas");
-  canvas.id = CANVAS_ID;
+  const canvas = document.getElementById("canvas");
   canvas.width = wx;
   canvas.height = wy;
-  ctx = canvas.getContext("2d");
-  img = ctx.createImageData(wx, wy);
-
-  const body = document.getElementsByTagName("body")[0];
-  body.appendChild(canvas);
 
   // fill iteration count options
   const niters = document.getElementById("niters");
@@ -56,7 +25,12 @@ function init()
     opt.innerHTML = v;
     niters.appendChild(opt);
   });
-  niters.value = ITER_LIM;
+  niters.value = worker_data.lim;
+  niters.onchange = () => {
+    worker_data.lim = Number(niters.value);
+    render();
+  };
+
 
   // fill color function options
   const cfunc = document.getElementById("cfunc");
@@ -67,6 +41,11 @@ function init()
     cfunc.appendChild(opt);
   });
   cfunc.value = Object.keys(cf_map)[0];
+  cf.color_fun = cf_map[cfunc.value];
+  cfunc.onchange = () => {
+    cf.color_fun = cf_map[cfunc.value];
+    render();
+  };
 
   // fill threads options
   const threads = document.getElementById("threads");
@@ -77,6 +56,7 @@ function init()
     threads.appendChild(opt);
   });
   threads.value = 4;
+  threads.onchange = () => init_workers(Number(threads.value));
 
   const points = document.getElementById("points");
   const ps = [
@@ -85,21 +65,15 @@ function init()
     {name: "a", loc: "-0.34842633784126914,-0.60653940234393235,17952"},
     {name: "b", loc: "2.613577e-1,-2.018128e-3,3.354786e+3"},
     {name: "input", loc: ""}
-  ]
+  ];
   ps.forEach((v) => {
     const opt = document.createElement("option");
     opt.value = v.loc;
     opt.innerHTML = v.name;
     points.appendChild(opt);
   });
-
-  init_workers(Number(threads.value));
-
-  // todo: dont change while working
-  niters.onchange = () => {worker_data.lim = Number(niters.value); render();}
-  cfunc.onchange = () => {color_fun = cf_map[cfunc.value]; render();}
-  threads.onchange = () => init_workers(Number(threads.value));
   points.onchange = point_jump;
+
 
   // checkbox for toggleable shading
   // calculates shading between directional light defined in "job.js"
@@ -111,6 +85,8 @@ function init()
     worker_data.shading = shading.checked;
     render();
   };
+
+  init_workers(Number(threads.value));
 
   render();
 
@@ -127,33 +103,29 @@ function init()
       space.x += space.dim * p / 2;
       space.y -= space.dim * p / 2;
       space.dim = space.dim * q;
-      render();
       break;
     case "x": case "X": // zoom out
       // qi = (1/q - 1)
       space.x -= space.dim * qi / 2;
       space.y += space.dim * qi / 2;
       space.dim = space.dim / q;
-      render();
       break;
     case "w": case "W": // move up
       space.y += space.dim * p;
-      render();
       break;
     case "s": case "S": // move down
       space.y -= space.dim * p;
-      render();
       break;
     case "a": case "A": // move right
       space.x -= space.dim * p;
-      render();
       break;
     case "d": case "D": // move left
       space.x += space.dim * p;
-      render();
       break;
     }
-  }
+
+    render();
+  };
 }
 
 
@@ -168,7 +140,6 @@ function render()
 
   const y_point = document.getElementById("y_point");
   y_point.value = space.y - space.dim / 2;
-
 
   start_workers();
 }
@@ -186,6 +157,7 @@ function move_to(x, y, m)
   space.dim = 4.0 / m;
   space.x = x - space.dim / 2;
   space.y = y + space.dim / 2;
+
   render();
 }
 
@@ -207,4 +179,9 @@ function point_jump()
     const m = Number(point[2]);
     move_to(x, y, m);
   }
+}
+
+export {
+  init,
+  go_button
 }

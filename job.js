@@ -5,7 +5,7 @@ onmessage = (e) => {
   const wy = e.data.vals.height;
   const shading = e.data.vals.shading;
 
-  var res = []
+  var res = [];
   if (shading)
     var res_s = [];
 
@@ -95,7 +95,7 @@ onmessage = (e) => {
     }
   }
   postMessage({from: e.data.from, result: res, shading: res_s});
-}
+};
 
 // escape radius, bigger the better, only slight effect on speed
 const R = 100;

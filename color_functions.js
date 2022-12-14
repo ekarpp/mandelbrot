@@ -1,13 +1,4 @@
-// color functions
-// need to map select value to real function
-var cf_map = {
-  Simple: simple,
-  BW: bw,
-  Periodic: periodic,
-  "Periodic color": periodic_color
-}
-
-var color_fun = Object.values(cf_map)[0];
+import { worker_data } from "./defs.js";
 
 // apply shading data
 function apply_shading(rgb, s)
@@ -25,48 +16,42 @@ function apply_shading(rgb, s)
 // the argument is limited to [0, ITER_LIM[
 // and is 0 if and only if pixel belongs to the Mandelbrot set
 
+// color functions
+// need to map select value to real function
+const cf_map = {
+  Simple: t => {
+    const tp = t / worker_data.lim;
+    const tip = 1 - tp;
 
-// black and white
-function bw(t)
-{
-  if (t == 0)
-    return {r: 0, g: 0, b: 0};
-  else
-    return {r: 1, g: 1, b: 1};
-}
+    return {
+      r: 8 * tp * tip + tp / 8,
+      g: 4 * tp * tip + tp / 4,
+      b: 2 * tp * tip + tp / 2
+    };
+  },
+  BW: t => {
+    return (t == 0)
+      ? { r: 0, g: 0, b: 0 }
+      : { r: 1, g: 1, b: 1 };
+  },
+  Periodic: t => {
+    const sc = Math.sin(2*Math.PI*t);
+    return {
+      r: sc,
+      g: sc,
+      b: sc
+    };
+  },
+  "Periodic color": t => {
+    return {
+      r: Math.sin(t),
+      g: Math.sin(t / Math.sqrt(2)),
+      b: Math.sin(t / Math.sqrt(3))
+    };
+  }
+};
 
-// random coloring
-function simple(t)
-{
-  const tp = t / worker_data.lim;
-  const tip = 1 - tp;
-
-  const color = {
-    r: 8 * tp * tip + tp / 8,
-    g: 4 * tp * tip + tp / 4,
-    b: 2 * tp * tip + tp / 2
-  };
-
-  return color;
-}
-
-function periodic(t)
-{
-  const sc = Math.sin(2*Math.PI*t);
-  const color = {
-    r: sc,
-    g: sc,
-    b: sc
-  };
-  return color;
-}
-
-function periodic_color(t)
-{
-  const color = {
-    r: Math.sin(t),
-    g: Math.sin(t / Math.sqrt(2)),
-    b: Math.sin(t / Math.sqrt(3))
-  };
-  return color;
+export {
+  cf_map,
+  apply_shading
 }

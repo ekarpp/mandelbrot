@@ -1,8 +1,5 @@
-var workers = {
-  count: 0,
-  done: 0,
-  arr: []
-}
+import { wx, wy, worker_data, workers, cf } from "./defs.js";
+import { apply_shading, cf_map } from "./color_functions.js";
 
 function init_workers(new_count)
 {
@@ -13,7 +10,7 @@ function init_workers(new_count)
 
 
   if (new_count <= workers.count)
-    workers.arr.length = new_count
+    workers.arr.length = new_count;
   else
   {
     for (var i = workers.count; i < new_count; i++)
@@ -29,7 +26,7 @@ function init_workers(new_count)
 
   // start working again if it was interrupted
   if (wip)
-    render();
+    start_workers();
 }
 
 function working()
@@ -43,6 +40,7 @@ function start_workers()
   if (working())
     return;
 
+  worker_data.image = new ImageData(wx, wy);
   workers.done = 0;
   const lines = Math.floor(wy / workers.count);
 
@@ -79,13 +77,13 @@ function job_done(e)
     for (var x = 0; x < wx; x++)
     {
       const idx = 4*(x + wy*(y + offst));
-      var c = color_fun(result[y][x]);
+      var c = cf.color_fun(result[y][x]);
       if (shading)
         c = apply_shading(c, shading[y][x]);
-      img.data[idx + 0] = 255 * c.r;
-      img.data[idx + 1] = 255 * c.g;
-      img.data[idx + 2] = 255 * c.b;
-      img.data[idx + 3] = 255; // alpha
+      worker_data.image.data[idx + 0] = 255 * c.r;
+      worker_data.image.data[idx + 1] = 255 * c.g;
+      worker_data.image.data[idx + 2] = 255 * c.b;
+      worker_data.image.data[idx + 3] = 255; // alpha
     }
   }
 
@@ -94,7 +92,15 @@ function job_done(e)
   // everyone done -> draw image
   if (workers.done === workers.count)
   {
-    ctx.putImageData(img, 0, 0);
+    document.getElementById("canvas")
+      .getContext("2d")
+      .putImageData(worker_data.image, 0, 0);
     document.getElementById("title").style.color = "black";
   }
+}
+
+
+export {
+  init_workers,
+  start_workers
 }
