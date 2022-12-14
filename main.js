@@ -72,7 +72,23 @@ function init()
     opt.innerHTML = v.name;
     points.appendChild(opt);
   });
-  points.onchange = point_jump;
+  points.onchange = e => {
+    // hide the input ui
+    const point_input = document.getElementById("point_input");
+    point_input.style.display = "none";
+
+    var point = document.getElementById("points").value;
+    if (point === "")
+      point_input.style.display = "block";
+    else
+    {
+      point = point.split(",");
+      const x = Number(point[0]);
+      const y = Number(point[1]);
+      const m = Number(point[2]);
+      move_to(x, y, m);
+    }
+  };
 
 
   // checkbox for toggleable shading
@@ -94,10 +110,6 @@ function init()
     const m = Number(document.getElementById("m_point").value);
     move_to(x, y, m);
   };
-
-  init_workers(Number(threads.value));
-
-  render();
 
   // keyboard input
   document.onkeypress = (e) => {
@@ -140,8 +152,11 @@ function init()
     if (do_render)
       render();
   };
-}
 
+  // init workers and render initial image
+  init_workers(Number(threads.value));
+  render();
+}
 
 function render()
 {
@@ -165,25 +180,6 @@ function move_to(x, y, m)
   config.space.y = y + config.space.dim / 2;
 
   render();
-}
-
-function point_jump()
-{
-  // hide the input ui
-  const point_input = document.getElementById("point_input");
-  point_input.style.display = "none";
-
-  var point = document.getElementById("points").value;
-  if (point === "")
-    point_input.style.display = "block";
-  else
-  {
-    point = point.split(",");
-    const x = Number(point[0]);
-    const y = Number(point[1]);
-    const m = Number(point[2]);
-    move_to(x, y, m);
-  }
 }
 
 export {
