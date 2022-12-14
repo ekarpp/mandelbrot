@@ -1,4 +1,4 @@
-import { wx, wy, worker_data, workers, space, cf } from "./defs.js";
+import { config } from "./config.js";
 import { init_workers, start_workers } from "./workers.js";
 import { cf_map } from "./color_functions.js";
 
@@ -13,8 +13,8 @@ const qi = (1/q - 1);
 function init()
 {
   const canvas = document.getElementById("canvas");
-  canvas.width = wx;
-  canvas.height = wy;
+  canvas.width = config.canvas.wx;
+  canvas.height = config.canvas.wy;
 
   // fill iteration count options
   const niters = document.getElementById("niters");
@@ -25,9 +25,9 @@ function init()
     opt.innerHTML = v;
     niters.appendChild(opt);
   });
-  niters.value = worker_data.lim;
+  niters.value = config.iterations;
   niters.onchange = () => {
-    worker_data.lim = Number(niters.value);
+    config.iterations = Number(niters.value);
     render();
   };
 
@@ -41,9 +41,9 @@ function init()
     cfunc.appendChild(opt);
   });
   cfunc.value = Object.keys(cf_map)[0];
-  cf.color_fun = cf_map[cfunc.value];
+  config.color_fun = cf_map[cfunc.value];
   cfunc.onchange = () => {
-    cf.color_fun = cf_map[cfunc.value];
+    config.color_fun = cf_map[cfunc.value];
     render();
   };
 
@@ -76,15 +76,18 @@ function init()
 
 
   // checkbox for toggleable shading
-  // calculates shading between directional light defined in "job.js"
+  // calculates shading between directional light defined in "config.js"
   // and normal to point potential line
   // https://www.math.univ-toulouse.fr/~cheritat/wiki-draw/index.php/Mandelbrot_set#Normal_map_effect
   const shading = document.getElementById("shading");
-  worker_data.shading = shading.checked;
+  config.apply_shading = shading.checked;
   shading.onclick = () => {
-    worker_data.shading = shading.checked;
+    config.apply_shading = shading.checked;
     render();
   };
+
+  // set the move button onclick
+  document.getElementById("go_button").onclick = go_button;
 
   init_workers(Number(threads.value));
 
@@ -93,34 +96,34 @@ function init()
   // keyboard input
   document.onkeypress = (e) => {
     // don't change variables if rendering in progress
-    if (workers.count !== workers.done)
+    if (config.workers.count !== config.workers.done)
       return;
 
     switch(e.key) {
     case "z": case "Z": // zoom in
       // we have to move origin to keep the picture stable
       // shrinks by q, so we have to move the picture by half of (1-q)=p towards the bottomright
-      space.x += space.dim * p / 2;
-      space.y -= space.dim * p / 2;
-      space.dim = space.dim * q;
+      config.space.x += config.space.dim * p / 2;
+      config.space.y -= config.space.dim * p / 2;
+      config.space.dim = config.space.dim * q;
       break;
     case "x": case "X": // zoom out
       // qi = (1/q - 1)
-      space.x -= space.dim * qi / 2;
-      space.y += space.dim * qi / 2;
-      space.dim = space.dim / q;
+      config.space.x -= config.space.dim * qi / 2;
+      config.space.y += config.space.dim * qi / 2;
+      config.space.dim = config.space.dim / q;
       break;
     case "w": case "W": // move up
-      space.y += space.dim * p;
+      config.space.y += config.space.dim * p;
       break;
     case "s": case "S": // move down
-      space.y -= space.dim * p;
+      config.space.y -= config.space.dim * p;
       break;
     case "a": case "A": // move right
-      space.x -= space.dim * p;
+      config.space.x -= config.space.dim * p;
       break;
     case "d": case "D": // move left
-      space.x += space.dim * p;
+      config.space.x += config.space.dim * p;
       break;
     }
 
@@ -133,13 +136,13 @@ function render()
 {
   // update move ui values
   const m_point = document.getElementById("m_point");
-  m_point.value = 4.0 / space.dim;
+  m_point.value = 4.0 / config.space.dim;
 
   const x_point = document.getElementById("x_point");
-  x_point.value = space.x + space.dim / 2;
+  x_point.value = config.space.x + config.space.dim / 2;
 
   const y_point = document.getElementById("y_point");
-  y_point.value = space.y - space.dim / 2;
+  y_point.value = config.space.y - config.space.dim / 2;
 
   start_workers();
 }
@@ -154,9 +157,9 @@ function go_button()
 
 function move_to(x, y, m)
 {
-  space.dim = 4.0 / m;
-  space.x = x - space.dim / 2;
-  space.y = y + space.dim / 2;
+  config.space.dim = 4.0 / m;
+  config.space.x = x - config.space.dim / 2;
+  config.space.y = y + config.space.dim / 2;
 
   render();
 }
@@ -182,6 +185,5 @@ function point_jump()
 }
 
 export {
-  init,
-  go_button
+  init
 }

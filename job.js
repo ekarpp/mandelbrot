@@ -1,19 +1,33 @@
-onmessage = (e) => {
-  const space = e.data.vals.space;
-  const lim = e.data.vals.lim;
-  const wx = e.data.vals.width;
-  const wy = e.data.vals.height;
-  const shading = e.data.vals.shading;
+import { config } from "./config.js";
 
-  var res = [];
-  if (shading)
-    var res_s = [];
+onmessage = e => {
+  const from = e.data.from;
+  const until = e.data.until;
 
-  for (var y = e.data.from; y < e.data.till; y++)
+  const space = config.space;
+  const iterations = config.iterations;
+  const wx = config.canvas.wx;
+  const wy = config.canvas.wy;
+
+  // escape radius, bigger the better, only slight effect on speed
+  const R = config.escape_r;
+
+  // incoming light direction
+  const lgt_x = config.light.x;
+  const lgt_y = config.light.y;
+  const lgt_z = config.light.z;
+
+  const apply_shading = config.apply_shading;
+
+  var image = [];
+  if (apply_shading)
+    var shading = [];
+
+  for (var y = from; y < until; y++)
   {
-    res[y - e.data.from] = [];
-    if (shading)
-      res_s[y - e.data.from] = [];
+    image[y - from] = [];
+    if (apply_shading)
+      shading[y - from] = [];
     for (var x = 0; x < wx; x++)
     {
       const c_re = space.x + space.dim * x/wx;
@@ -27,7 +41,7 @@ onmessage = (e) => {
       var re2 = 0.0;
       var im2 = 0.0;
 
-      if (shading)
+      if (apply_shading)
       {
         // derivative w.r.t. c
         var d_re = 0.0;
@@ -35,11 +49,11 @@ onmessage = (e) => {
       }
 
       var count = 0;
-      while (count < lim && re2 + im2 < R*R)
+      while (count < iterations && re2 + im2 < R*R)
       {
         count++;
 
-        if (shading)
+        if (apply_shading)
         {
           const nd_re = 2*(d_re*z_re - d_im*z_im) + 1;
           const nd_im = 2*(d_re*z_im + d_im*z_re);
@@ -61,20 +75,23 @@ onmessage = (e) => {
 
 
 
-      if (count === lim)
+      if (count === iterations)
       {
-        res[y - e.data.from][x] = 0;
-        if (shading)
-          res_s[y - e.data.from][x] = 0;
+        image[y - from][x] = 0;
+        if (apply_shading)
+          shading[y - from][x] = 0;
       }
       else
       {
         // real iteration number: count - ln(ln(sqrt(re2 + im2) / ln(R))) / ln(2)
-        res[y - e.data.from][x] = count + 1
+        image[y - from][x] = count + 1
           - (Math.log(Math.log(re2 + im2)) - Math.log(Math.log(R))) / Math.log(2);
 
 
-        if (shading)
+        // calculates shading between directional light defined in "config.js"
+        // and normal to point potential line
+        // https://www.math.univ-toulouse.fr/~cheritat/wiki-draw/index.php/Mandelbrot_set#Normal_map_effect
+        if (apply_shading)
         {
           // u = z/d
           var u_re = (z_re*d_re + z_im*d_im) / (d_re*d_re + d_im*d_im);
@@ -85,23 +102,14 @@ onmessage = (e) => {
           u_im /= abs;
 
           // dot product with light direction
-          var t = (u_re*l_re + u_im*l_im + l_z);
-          t /= (1 + l_z);
+          var t = (u_re*lgt_x + u_im*lgt_y + lgt_z);
+          t /= (1 + lgt_z);
           t = Math.max(0, t);
 
-          res_s[y - e.data.from][x] = t;
+          shading[y - from][x] = t;
         }
       }
     }
   }
-  postMessage({from: e.data.from, result: res, shading: res_s});
+  postMessage({ from, image, shading });
 };
-
-// escape radius, bigger the better, only slight effect on speed
-const R = 100;
-
-// incoming light direction
-const a = Math.PI / 8;
-const l_re = Math.cos(a);
-const l_im = Math.sin(a);
-const l_z = 1.5;

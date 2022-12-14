@@ -1,16 +1,7 @@
-import { worker_data } from "./defs.js";
-
-// apply shading data
-function apply_shading(rgb, s)
-{
-  rgb.r *= s;
-  rgb.g *= s;
-  rgb.b *= s;
-  return rgb;
-}
+import { config } from "./config.js";
 
 // color functions take single argument: the real iteration number
-// they return a object with fields r,g,b corresponding to the coefficient of each color
+// they return an array with 3 elements [r, g, b] corresponding to the coefficient of each color
 // that is they are multiplied by 255 when drawing the picture
 
 // the argument is limited to [0, ITER_LIM[
@@ -20,38 +11,33 @@ function apply_shading(rgb, s)
 // need to map select value to real function
 const cf_map = {
   Simple: t => {
-    const tp = t / worker_data.lim;
+    const tp = t / config.iterations;
     const tip = 1 - tp;
 
-    return {
-      r: 8 * tp * tip + tp / 8,
-      g: 4 * tp * tip + tp / 4,
-      b: 2 * tp * tip + tp / 2
-    };
+    return [
+      8 * tp * tip + tp / 8,
+      4 * tp * tip + tp / 4,
+      2 * tp * tip + tp / 2
+    ];
   },
   BW: t => {
     return (t == 0)
-      ? { r: 0, g: 0, b: 0 }
-      : { r: 1, g: 1, b: 1 };
+      ? [ 0, 0, 0 ]
+      : [ 1, 1, 1 ];
   },
   Periodic: t => {
     const sc = Math.sin(2*Math.PI*t);
-    return {
-      r: sc,
-      g: sc,
-      b: sc
-    };
+    return [ sc, sc, sc ];
   },
   "Periodic color": t => {
-    return {
-      r: Math.sin(t),
-      g: Math.sin(t / Math.sqrt(2)),
-      b: Math.sin(t / Math.sqrt(3))
-    };
+    return [
+      Math.sin(t),
+      Math.sin(t / Math.sqrt(2)),
+      Math.sin(t / Math.sqrt(3))
+    ];
   }
 };
 
 export {
-  cf_map,
-  apply_shading
+  cf_map
 }
