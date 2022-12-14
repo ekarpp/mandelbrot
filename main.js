@@ -86,8 +86,14 @@ function init()
     render();
   };
 
-  // set the move button onclick
-  document.getElementById("go_button").onclick = go_button;
+  // set the move form submission
+  document.getElementById("point_form").onsubmit = e => {
+    e.preventDefault();
+    const x = Number(document.getElementById("x_point").value);
+    const y = Number(document.getElementById("y_point").value);
+    const m = Number(document.getElementById("m_point").value);
+    move_to(x, y, m);
+  };
 
   init_workers(Number(threads.value));
 
@@ -150,14 +156,6 @@ function render()
   y_point.value = config.space.y - config.space.dim / 2;
 
   start_workers();
-}
-
-function go_button()
-{
-  const x = Number(document.getElementById("x_point").value);
-  const y = Number(document.getElementById("y_point").value);
-  const m = Number(document.getElementById("m_point").value);
-  move_to(x, y, m);
 }
 
 function move_to(x, y, m)

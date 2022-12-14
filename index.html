@@ -41,18 +41,20 @@
       <label>Jump to:</label></br>
       <select id="points"></select></br>
       <div style="display: none;" id="point_input">
-        <div style="float: left; padding-right: 5px;">
-          x: <input id="x_point" size="5"/>
-        </div>
-        </br>
-        <div style="float: left; padding-right: 5px;">
-          y: <input id="y_point" size="5"/></br>
-        </div>
-        </br>
-        <div style="float: left; padding-right: 5px;">
-          m: <input id="m_point" size="5"/>
-          <button id="go_button" type="button">Go</button>
-        </div>
+        <form id="point_form">
+          <div style="float: left; padding-right: 5px;">
+            x: <input id="x_point" size="5" type="text"/>
+          </div>
+          </br>
+          <div style="float: left; padding-right: 5px;">
+            y: <input id="y_point" size="5" type="text"/></br>
+          </div>
+          </br>
+          <div style="float: left; padding-right: 5px;">
+            m: <input id="m_point" size="5" type="text"/>
+            <input id="go_button" type="submit" value="Go"/>
+          </div>
+        </form>
       </div>
     </div>
     <canvas id="canvas">
