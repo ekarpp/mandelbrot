@@ -1,3 +1,6 @@
+// the work to be done by each thread
+// computes n lines from the image
+
 onmessage = e => {
   const from = e.data.from;
   const until = e.data.until;
