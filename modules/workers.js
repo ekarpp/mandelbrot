@@ -1,20 +1,5 @@
 import { config } from "./config.js";
 
-function update_color_fun_one(idx)
-{
-  config.workers.arr[idx].postMessage({
-    color_fun: config.color_fun.toString()
-  });
-}
-
-function update_color_fun()
-{
-  // render gets called afterwards, so can leave title as it is
-  document.getElementById("title").style.color = "red";
-  for (var i = 0; i < config.workers.count; i++)
-    update_color_fun_one(i);
-}
-
 function init_workers(new_count)
 {
   const wip = working();
@@ -29,10 +14,9 @@ function init_workers(new_count)
   {
     for (var i = config.workers.count; i < new_count; i++)
     {
-      config.workers.arr[i] = new Worker("./modules/job.js");
+      config.workers.arr[i] = new Worker("./modules/job.js", { type: "module" });
       config.workers.arr[i].onmessage = job_done;
       config.workers.arr[i].onerror = e => console.error(e);
-      update_color_fun_one(i);
     }
   }
 
@@ -66,6 +50,7 @@ function start_workers()
     iterations: config.iterations,
     canvas: config.canvas,
     escape_r: config.escape_r,
+    color_fun: config.color_fun,
     light: config.light,
     apply_shading: config.apply_shading
   };

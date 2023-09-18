@@ -55,11 +55,9 @@ function init()
     cfunc.appendChild(opt);
   });
   cfunc.value = Object.keys(cf_map)[0];
-  config.color_fun = cf_map[cfunc.value];
-  update_color_fun();
+  config.color_fun = cfunc.value;
   cfunc.onchange = () => {
-    config.color_fun = cf_map[cfunc.value];
-    update_color_fun();
+    config.color_fun = cfunc.value;
     render();
   };
 
