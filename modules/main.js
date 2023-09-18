@@ -1,6 +1,7 @@
 import { config } from "./config.js";
 import { start_workers } from "./workers.js";
 import { cf_map } from "./color_functions.js";
+import { webgl_render } from "./gpu.js";
 
 // multiplier for transformations:
 // move origin by p of current dimension (while moving)
@@ -169,7 +170,14 @@ function render()
   const y_point = document.getElementById("y_point");
   y_point.value = config.space.y - config.space.dim / 2;
 
-  start_workers();
+  if (config.threads !== 0)
+  {
+    start_workers();
+  }
+  else // use GPU
+  {
+    webgl_render();
+  }
 }
 
 function move_to(x, y, m)
