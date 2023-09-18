@@ -29,7 +29,7 @@ function init_workers(new_count)
   {
     for (var i = config.workers.count; i < new_count; i++)
     {
-      config.workers.arr[i] = new Worker("./job.js");
+      config.workers.arr[i] = new Worker("./modules/job.js");
       config.workers.arr[i].onmessage = job_done;
       config.workers.arr[i].onerror = e => console.error(e);
       update_color_fun_one(i);
