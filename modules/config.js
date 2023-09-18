@@ -19,6 +19,7 @@ const config = {
     y: Math.sin(light_angle),
     z: 1.5 // "height" of light
   },
+  threads: 4,
   iterations: 500, // number of iterations for each point
   color_fun: "Simple",
   // escape radius, bigger the better, only slight effect on speed

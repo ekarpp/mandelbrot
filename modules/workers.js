@@ -2,14 +2,8 @@ import { config } from "./config.js";
 
 function init_workers(new_count)
 {
-  const wip = working();
-  if (wip)
-    for (var i = 0; i < config.workers.count; i++)
-      config.workers.arr[i].terminate();
-
-
   if (new_count <= config.workers.count)
-    config.arr.length = new_count;
+    config.workers.arr.length = new_count;
   else
   {
     for (var i = config.workers.count; i < new_count; i++)
@@ -22,10 +16,6 @@ function init_workers(new_count)
 
   config.workers.count = new_count;
   config.workers.done = new_count;
-
-  // start working again if it was interrupted
-  if (wip)
-    start_workers();
 }
 
 function working()
@@ -38,6 +28,9 @@ function start_workers()
   // already working
   if (working())
     return;
+
+  if (config.workers.count !== config.threads)
+    init_workers(config.threads);
 
   config.workers.image = new ImageData(config.canvas.wx, config.canvas.wy);
   config.workers.done = 0;
@@ -106,7 +99,5 @@ function job_done(e)
 
 
 export {
-  init_workers,
   start_workers,
-  update_color_fun
 }

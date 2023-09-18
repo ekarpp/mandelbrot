@@ -1,5 +1,5 @@
 import { config } from "./config.js";
-import { init_workers, start_workers, update_color_fun } from "./workers.js";
+import { start_workers } from "./workers.js";
 import { cf_map } from "./color_functions.js";
 
 // multiplier for transformations:
@@ -33,17 +33,16 @@ function init()
 
   // fill threads options
   const threads = document.getElementById("threads");
-  [1, 2, 4, 8, 16, 32].forEach((v) => {
+  [0, 1, 2, 4, 8, 16, 32].forEach((v) => {
     const opt = document.createElement("option");
     opt.value = v;
-    opt.innerHTML = v;
+    opt.innerHTML = (v === 0) ? "GPU" : v;
     threads.appendChild(opt);
   });
   threads.value = 4;
-  // init workers, so color_fun can be set
-  init_workers(Number(threads.value));
+  config.threads = Number(threads.value);
   threads.onchange = () => {
-    init_workers(Number(threads.value));
+    config.threads = Number(threads.value);
   };
 
   // fill color function options
