@@ -76,6 +76,9 @@ function webgl_render()
   const iters_max = gl.getUniformLocation(program, "iters_max");
   gl.uniform1i(iters_max, config.iterations);
 
+  const cfun_idx = gl.getUniformLocation(program, "cfun_idx");
+  gl.uniform1i(cfun_idx, config);
+
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
 
   gl_canvas.hidden = false;
