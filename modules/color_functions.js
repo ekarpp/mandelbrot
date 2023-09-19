@@ -6,12 +6,9 @@
 // the argument is limited to [0, ITER_LIM[
 // and is 0 if and only if pixel belongs to the Mandelbrot set
 
-// these get passed as strings to the workers and then parsed to javascript
 
-// color functions
-// need to map select value to real function
+// color functions, new ones also need to be implemented on webGL side
 const cf_map = {
-  // replace simple and get rid of having to pass it...
   Simple: (t, it) => {
     const tp = t / it;
     const tip = 1 - tp;
@@ -40,6 +37,15 @@ const cf_map = {
   }
 };
 
+// used to map to correct one on webGL side
+const cf_idxs = {
+  Simple: 0,
+  BW: 1,
+  Periodic: 2,
+  "Periodic color": 3,
+}
+
 export {
-  cf_map
+  cf_map,
+  cf_idxs,
 }

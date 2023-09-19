@@ -1,4 +1,5 @@
 import { config } from "./config.js";
+import { cf_idxs } from "./color_functions.js";
 
 function webgl_render()
 {
@@ -77,7 +78,7 @@ function webgl_render()
   gl.uniform1i(iters_max, config.iterations);
 
   const cfun_idx = gl.getUniformLocation(program, "cfun_idx");
-  gl.uniform1i(cfun_idx, config);
+  gl.uniform1i(cfun_idx, cf_idxs[config.color_fun]);
 
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
 
