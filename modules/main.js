@@ -42,7 +42,7 @@ function init()
     opt.innerHTML = (v === 0) ? "GPU" : v;
     threads.appendChild(opt);
   });
-  threads.value = 4;
+  threads.value = 0;
   config.threads = Number(threads.value);
   threads.onchange = () => {
     config.threads = Number(threads.value);
