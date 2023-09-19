@@ -14,8 +14,10 @@ const qi = (1/q - 1);
 function init()
 {
   const canvas = document.getElementById("canvas");
-  canvas.width = config.canvas.wx;
-  canvas.height = config.canvas.wy;
+  const gl_canvas = document.getElementById("gl-canvas");
+  canvas.width = gl_canvas.width = config.canvas.wx;
+  canvas.height = gl_canvas.height = config.canvas.wy;
+
 
   // fill iteration count options
   const niters = document.getElementById("niters");

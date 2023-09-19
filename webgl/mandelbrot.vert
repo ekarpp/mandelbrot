@@ -1,6 +1,8 @@
-attribute vec4 a_position;
+#version 300 es
+
+in vec4 vertex_pos;
 
 void main()
 {
-    gl_Position = a_position;
+    gl_Position = vertex_pos;
 }

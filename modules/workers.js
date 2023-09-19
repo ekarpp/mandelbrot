@@ -90,9 +90,12 @@ function job_done(e)
   // everyone done -> draw image. move to main? future etc..
   if (config.workers.done === config.workers.count)
   {
-    document.getElementById("canvas")
-      .getContext("2d")
-      .putImageData(config.workers.image, 0, 0);
+    const canvas = document.getElementById("canvas");
+    const gl_canvas = document.getElementById("gl-canvas");
+    const ctx = canvas.getContext("2d");
+    ctx.putImageData(config.workers.image, 0, 0);
+    canvas.hidden = false;
+    gl_canvas.hidden = true;
     document.getElementById("title").style.color = "black";
   }
 }
