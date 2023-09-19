@@ -21,7 +21,7 @@ function webgl_render()
   {
     gl.deleteShader(vertex);
     console.log("Error while creating vertex shader");
-    document.getElementById("title").style.color = "black";
+    document.getElementById("title").style.color = "white";
     return;
   }
 
@@ -32,7 +32,7 @@ function webgl_render()
     gl.deleteShader(fragment);
     gl.deleteShader(vertex);
     console.log("Error while creating fragment shader");
-    document.getElementById("title").style.color = "black";
+    document.getElementById("title").style.color = "white";
     return;
   }
 
@@ -43,7 +43,7 @@ function webgl_render()
     gl.deleteShader(vertex);
     gl.deleteProgram(program);
     console.log("Error while linking shaders");
-    document.getElementById("title").style.color = "black";
+    document.getElementById("title").style.color = "white";
     return;
   }
 
@@ -90,7 +90,7 @@ function webgl_render()
 
   gl_canvas.hidden = false;
   canvas.hidden = true;
-  document.getElementById("title").style.color = "black";
+  document.getElementById("title").style.color = "white";
 }
 
 function get_src(file_name)

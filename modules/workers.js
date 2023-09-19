@@ -96,7 +96,7 @@ function job_done(e)
     ctx.putImageData(config.workers.image, 0, 0);
     canvas.hidden = false;
     gl_canvas.hidden = true;
-    document.getElementById("title").style.color = "black";
+    document.getElementById("title").style.color = "white";
   }
 }
 

@@ -65,11 +65,11 @@ function init()
 
   const points = document.getElementById("points");
   const ps = [
-    { name: "initial", loc: "0,0,1" },
-    { name: "spiral", loc: "-0.761574,-0.0847597,3125" },
-    { name: "void", loc: "-0.34842633784126914,-0.60653940234393235,17952" },
-    { name: "funky", loc: "2.613577e-1,-2.018128e-3,3.354786e+3" },
-    { name: "input", loc: "" }
+    { name: "Initial", loc: "0,0,1" },
+    { name: "Spiral", loc: "-0.761574,-0.0847597,3125" },
+    { name: "Void", loc: "-0.34842633784126914,-0.60653940234393235,17952" },
+    { name: "Funky", loc: "2.613577e-1,-2.018128e-3,3.354786e+3" },
+    { name: "Input", loc: "" }
   ];
   ps.forEach((v) => {
     const opt = document.createElement("option");
