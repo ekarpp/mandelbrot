@@ -78,9 +78,10 @@ self.onmessage = e => {
         image[y - from][x] = color_fun(0, iterations).map(v => 255*v);
       else
       {
-        // real iteration number: count - ln(ln(sqrt(re2 + im2) / ln(R))) / ln(2)
+        // real iteration number: count - ln(ln(sqrt(re2 + im2)) / ln(R)) / ln(2)
         const real_it_number = count + 1
-              - (Math.log(Math.log(re2 + im2)) - Math.log(Math.log(R))) / Math.log(2);
+              - Math.log(Math.log(Math.sqrt(re2 + im2)) / Math.log(R)) / Math.log(2);
+
         var color = color_fun(real_it_number, iterations);
         // calculates shading between directional light defined in "config.js"
         // and normal to point potential line
