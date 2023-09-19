@@ -22,6 +22,19 @@
       border-radius: 4px;
       border: 1px solid #AAAAAA;
   }
+
+  #point_input label {
+      width: 20px;
+  }
+
+  #point_input input[type=text] {
+      width: 80px;
+  }
+
+  #point_input input[type=submit] {
+      width: 110px;
+      margin-top: 3px;
+  }
 </style>
 
 
@@ -59,18 +72,19 @@
       <select id="points"></select></br>
       <div style="display: none;" id="point_input">
         <form id="point_form">
-          <div style="float: left; padding-right: 5px;">
-            x: <input id="x_point" size="5" type="text"/>
-          </div>
+          <label>x:</label>
+          <input id="x_point" type="text"/>
           </br>
-          <div style="float: left; padding-right: 5px;">
-            y: <input id="y_point" size="5" type="text"/></br>
-          </div>
+
+          <label>y:</label>
+          <input id="y_point" type="text"/>
           </br>
-          <div style="float: left; padding-right: 5px;">
-            m: <input id="m_point" size="5" type="text"/>
-            <input id="go_button" type="submit" value="Go"/>
-          </div>
+
+          <label>m:</label>
+          <input id="m_point" type="text"/>
+          </br>
+
+          <input id="go_button" type="submit" value="Go"/>
         </form>
       </div>
     </div>
