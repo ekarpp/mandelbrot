@@ -59,12 +59,23 @@ function webgl_render()
     [-1, -1],
   ];
 
+  // fill whole canvas with rectangle
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices.flat()), gl.STATIC_DRAW);
   const vertex_pos = gl.getAttribLocation(program, "vertex_pos");
-
   gl.enableVertexAttribArray(vertex_pos);
   gl.vertexAttribPointer(vertex_pos, 2, gl.FLOAT, false, 0, 0);
+
+  // pass config arguments
+  const escape_rad = gl.getUniformLocation(program, "escape_rad");
+  gl.uniform1f(escape_rad, config.escape_r);
+
+  const space = gl.getUniformLocation(program, "space");
+  gl.uniform3f(space, config.space.x, config.space.y, config.space.dim);
+
+  const iters_max = gl.getUniformLocation(program, "iters_max");
+  gl.uniform1i(iters_max, config.iterations);
+
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
 
   gl_canvas.hidden = false;

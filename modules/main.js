@@ -173,13 +173,9 @@ function render()
   y_point.value = config.space.y - config.space.dim / 2;
 
   if (config.threads !== 0)
-  {
     start_workers();
-  }
   else // use GPU
-  {
     webgl_render();
-  }
 }
 
 function move_to(x, y, m)

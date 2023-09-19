@@ -23,7 +23,7 @@ const config = {
   iterations: 500, // number of iterations for each point
   color_fun: "Simple",
   // escape radius, bigger the better, only slight effect on speed
-  escape_r: 100,
+  escape_r: 100.0,
   apply_shading: false,
   workers: {
     count: 0,
