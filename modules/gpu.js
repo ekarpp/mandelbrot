@@ -80,6 +80,12 @@ function webgl_render()
   const cfun_idx = gl.getUniformLocation(program, "cfun_idx");
   gl.uniform1i(cfun_idx, cf_idxs[config.color_fun]);
 
+  const shading = gl.getUniformLocation(program, "shading");
+  gl.uniform1i(shading, config.apply_shading);
+
+  const light = gl.getUniformLocation(program, "light");
+  gl.uniform3f(light, config.light.x, config.light.y, config.light.z);
+
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, vertices.length);
 
   gl_canvas.hidden = false;
