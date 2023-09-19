@@ -16,12 +16,21 @@ void main()
     while (iter < ITERS && dot(loc, loc) < R * R)
     {
         iter++;
-        loc = vec2(loc.x * loc.x - loc.y * loc.y, 2.0 * loc.x * loc.y)
-            + c_pos;
+        loc = vec2(loc.x * loc.x - loc.y * loc.y, 2.0 * loc.x * loc.y) + c_pos;
     }
 
     if (iter == ITERS)
         frag_color = vec4(0, 0, 0, 1);
     else
-        frag_color = vec4(1, 1, 1, 1);
+    {
+        float scaled = float(iter) + 1.0 - log(log(length(loc)) / log(R)) / log(2.0);
+        float tp = 1.0 / scaled;
+        float tip = 1.0 - tp;
+        frag_color = vec4(
+            8.0 * tp * tip + tp / 8.0,
+            4.0 * tp * tip + tp / 4.0,
+            2.0 * tp * tip + tp / 2.0,
+            1
+        );
+    }
 }
